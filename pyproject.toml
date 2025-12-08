@@ -1,0 +1,18 @@
+[project]
+name = "enm612-group-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gurobipy<13",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "scikit-learn>=1.7.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.14.8",
+]
