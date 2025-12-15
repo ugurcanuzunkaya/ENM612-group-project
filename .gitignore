@@ -9,5 +9,12 @@ wheels/
 # Virtual environments
 .venv
 
-# Project specific
+# Project specific (Results included in repo as requested)
+# results/
+
 .DS_Store
+
+# Tools
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/

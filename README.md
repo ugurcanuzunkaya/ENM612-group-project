@@ -1,121 +1,149 @@
 # Max-Min Separability Projesi
 
-Bu proje, Adil Hoca'nın makalesinde önerilen **Max-Min Separability** algoritmasının Python ile implementasyonunu içerir. Proje, **Test Driven Development (TDD)** prensiplerine sadık kalınarak geliştirilmiş ve optimizasyon süreçleri için **Gurobi** çözücüsü kullanılmıştır.
+Bu proje, Adil Hoca'nın makalesinde önerilen **Max-Min Separability** algoritmasının Python ile implementasyonunu içerir. Proje, optimizasyon süreçleri için **Gurobi** çözücüsünü kullanır ve çeşitli veri setleri üzerinde sınıflandırma performansı sunar.
 
 ## 📋 İçindekiler
 - [Proje Hakkında](#proje-hakkında)
 - [Kurulum](#kurulum)
+  - [uv ile Kurulum (Önerilen)](#uv-ile-kurulum-önerilen)
+  - [pip ile Kurulum](#pip-ile-kurulum)
 - [Kullanım](#kullanım)
+  - [Dataset Seçenekleri](#dataset-seçenekleri)
+  - [Komut Satırı Argümanları](#komut-satırı-argümanları)
+- [Deneysel Sonuçlar](#deneysel-sonuçlar)
 - [Proje Yapısı](#proje-yapısı)
-- [Algoritma Detayları](#algoritma-detayları)
-- [Sonuçların Analizi](#sonuçların-analizi)
-- [Gelecek Çalışmalar](#gelecek-çalışmalar)
 
 ## 🚀 Proje Hakkında
-Bu çalışma, lineer olmayan veri setlerini (örneğin `make_moons`) ayırmak için parçalı lineer (piecewise linear) hiperdüzlemler kullanan bir sınıflandırma yöntemidir. Yöntem, klasik SVM veya Lojistik Regresyon'dan farklı olarak, her sınıf için birden fazla hiperdüzlem grubu (polyhedral sets) tanımlar ve **Max-Min** mantığıyla en iyi ayrımı yapmaya çalışır.
-
-Türevsiz optimizasyon (Derivative-Free Optimization) yöntemlerinden biri olan **Discrete Gradient Method (DGM)** kullanılmıştır. İniş yönünü bulmak için ise Gurobi ile bir Kuadratik Programlama (QP) alt problemi çözülmektedir.
+Bu çalışma, lineer olmayan veri setlerini maksimizasyon ve minimizasyon prensiplerine dayalı parçalı lineer hiperdüzlemlerle (piecewise linear hyperplanes) ayırmayı amaçlar.
+- **Yöntem**: Discrete Gradient Method (DGM) ve Gurobi (QP Solver).
+- **Amaç**: Sınıflandırma hatasını minimize eden hiperdüzlem katsayılarını bulmak.
 
 ## 🛠 Kurulum
 
-Bu projeyi çalıştırmak için sisteminizde Python ve Gurobi lisansının yüklü olması gerekir. Proje bağımlılıkları `uv` paket yöneticisi ile yönetilmektedir.
+Projenin çalışması için **Python 3.10+** ve geçerli bir **Gurobi Lisansı** gereklidir.
 
-### Adım 1: Projeyi Klonlayın
-```bash
-git clone <repo-url>
-cd ENM612-group-project
-```
+### uv ile Kurulum (Önerilen)
+`uv`, modern ve hızlı bir Python paket yöneticisidir.
 
-### Adım 2: Bağımlılıkları Yükleyin
-Eğer `uv` yüklü değilse, önce onu yükleyin veya standart `pip` kullanın.
-```bash
-# uv ile kurulum (Önerilen)
-uv sync
+1. **Projeyi Klonlayın:**
+   ```bash
+   git clone <repo-url>
+   cd ENM612-group-project
+   ```
 
-# Veya pip ile
-pip install numpy matplotlib gurobipy scikit-learn
-```
+2. **Bağımlılıkları Yükleyin:**
+   ```bash
+   uv sync
+   ```
 
-**Önemli Not:** Gurobi lisansınızın versiyonu ile `gurobipy` kütüphanesinin versiyonunun uyumlu olduğundan emin olun. (Bu projede 12.0.3 versiyonu kullanılmıştır).
+3. **Projeyi Çalıştırın:**
+   ```bash
+   uv run main.py --dataset moons
+   ```
+
+### pip ile Kurulum
+Standart `pip` aracını kullanmayı tercih ederseniz:
+
+1. **Sanal Ortam Oluşturun (Opsiyonel ama önerilir):**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Mac/Linux
+   # .venv\Scripts\activate   # Windows
+   ```
+
+2. **Bağımlılıkları Yükleyin:**
+   ```bash
+   pip install numpy matplotlib gurobipy scikit-learn ucimlrepo
+   ```
+   *(Not: `requirements.txt` dosyası varsa `pip install -r requirements.txt` komutunu kullanabilirsiniz.)*
+
+3. **Gurobi Lisansını Kontrol Edin:**
+   `gurobipy` kütüphanesinin çalışması için lisansınızın aktif olduğundan emin olun.
 
 ## 💻 Kullanım
 
-### Testleri Çalıştırma (TDD)
-Kodun doğruluğunu teyit etmek için birim testleri çalıştırabilirsiniz:
-```bash
-uv run pytest tests/test_max_min.py
-```
-Bu testler; hiperparametrelerin doğruluğunu, kayıp fonksiyonunun negatif olmamasını ve gradyan boyutlarını kontrol eder.
+Modeli eğitmek ve sonuçları görmek için `main.py` dosyasını kullanabilirsiniz.
 
-### Modeli Eğitme ve Görselleştirme
-Modeli farklı veri setleri üzerinde çalıştırmak için CLI argümanları eklenmiştir.
-
-**Moons Veri Seti (Varsayılan):**
+### Temel Komut
 ```bash
-uv run main.py --dataset moons --groups 3 --planes 2
+# uv kullanıyorsanız
+uv run main.py --dataset [DATASET_NAME]
+
+# pip/python kullanıyorsanız
+python main.py --dataset [DATASET_NAME]
 ```
 
-**Breast Cancer Veri Seti:**
+### Komut Satırı Argümanları
+
+| Argüman | Tip | Varsayılan | Açıklama |
+| :--- | :--- | :---: | :--- |
+| `--dataset` | `str` | `moons` | Kullanılacak veri seti ismi (Liste aşağıdadır). |
+| `--groups` | `int` | `3` | Sınıflandırma için kullanılacak grup sayısı (r). |
+| `--planes` | `int` | `2` | Her gruptaki hiperdüzlem sayısı (j). |
+
+**Örnek 1: Moons Veri Seti (Varsayılan Ayarlar)**
 ```bash
-uv run main.py --dataset breast_cancer
+uv run main.py --dataset moons
 ```
 
-**Blobs 3D Veri Seti (3D Görselleştirme Testi):**
+**Örnek 2: Özel Parametrelerle Blobs 3D**
 ```bash
-uv run main.py --dataset blobs_3d --groups 3 --planes 2
+uv run main.py --dataset blobs_3d --groups 4 --planes 3
 ```
 
-**Özel (Custom) Veri Seti:**
-1. `src/dataset_loader.py` dosyasındaki `load_custom_dataset` fonksiyonunu düzenleyin.
-2. Aşağıdaki komutu çalıştırın:
-```bash
-uv run main.py --dataset custom
-```
+### Dataset Seçenekleri
 
-Bu komutlar eğitimi başlatacak, başarı oranlarını (Accuracy, F1-Score) ve toplam süreyi raporlayacaktır. 2 boyutlu veri setleri için `decision_boundary.png` görseli oluşturulur.
+Aşağıdaki veri setleri `src/dataset_loader.py` üzerinden desteklenmektedir:
+
+- **Sentetik Veriler (Sklearn):**
+  - `moons`: İki yarım ay şeklindeki veri (2D, Lineer Ayrılamaz).
+  - `blobs_3d`: 3 boyutlu, 2 merkezli blob verisi (3D Görselleştirme Testi).
+  - `breast_cancer`: Sklearn Meme Kanseri veri seti.
+
+- **UCI Machine Learning Repository Verileri:**
+  - `wbcd`: Wisconsin Breast Cancer (Diagnosis).
+  - `wbcp`: Wisconsin Breast Cancer (Prognosis).
+  - `heart`: Cleveland Heart Disease.
+  - `votes`: Congressional Voting Records (Kategorik).
+  - `ionosphere`: Ionosphere Radar verisi.
+  - `liver`: BUPA Liver Disorders.
+
+- **Diğer:**
+  - `custom`: Kendi özel veri setinizi eklemek için şablon.
+
+## 📊 Deneysel Sonuçlar
+
+Tüm deneyler **`results/`** klasörüne kaydedilir. Bu klasörde:
+- `*.txt`: Eğitim süresi, metrikler ve ağırlık matrisleri.
+- `*.png`: 2D ve 3D görselleştirmeler (Sadece uygun boyutlu veriler için).
+
+**Özet Başarım Tablosu:**
+
+| Veri Seti | Kaynak | Özellik Sayısı | Doğruluk (Accuracy) |
+| :--- | :--- | :---: | :---: |
+| **Blobs 3D** | Sklearn | 3 | **%100.00** |
+| **Breast Cancer** | Sklearn | 30 | **%99.30** |
+| **WBCD** | UCI | 30 | **%99.12** |
+| **Votes** | UCI | 16 | **%99.08** |
+| **Moons** | Sklearn | 2 | **%98.00** |
+| **Ionosphere** | UCI | 34 | **%98.01** |
+| **WBCP** | UCI | 33 | **%94.95** |
+| **Heart** | UCI | 13 | **%93.40** |
+| **BUPA Liver** | UCI | 5 | **%27.83** |
 
 ## 📂 Proje Yapısı
 
 ```
 .
 ├── src/
-│   ├── max_min.py       # Algoritmanın ana sınıfı (MaxMinSeparability)
-│   ├── dataset_loader.py # Veri seti yükleme ve işleme modülü
-│   └── visualization.py  # Görselleştirme modülü (2D/3D)
-├── tests/
-│   └── test_max_min.py  # Birim testler
-├── main.py              # Çalıştırma ve görselleştirme betiği
-├── pyproject.toml       # Bağımlılık dosyası
-└── README.md            # Dokümantasyon
+│   ├── max_min.py        # Algoritma Çekirdeği (Model)
+│   ├── dataset_loader.py # Veri Yükleme ve Ön İşleme
+│   └── visualization.py  # Görselleştirme (Plotting)
+├── main.py               # Ana Çalıştırma Dosyası
+├── results/              # Çıktı Klasörü (Model çıktıları bulunmaktadır)
+├── pyproject.toml        # Proje ve Bağımlılık Ayarları (uv)
+└── README.md             # Dokümantasyon
 ```
 
-## 🧠 Algoritma Detayları
-
-Kodun temel bileşenleri şunlardır:
-
-1.  **Objective Function (Amaç Fonksiyonu):** Makaledeki Denklem 31 ve 32'nin vektörize edilmiş halidir. Hata (Loss) değeri hesaplanırken, doğru sınıflandırılmış ve "güvenli" bölgedeki noktalar için hata 0 kabul edilir (Hinge Loss benzeri yapı).
-2.  **Discrete Gradient (Ayrık Gradyan):** Fonksiyonun türevi alınamadığı için (non-smooth), rastgele yönlerdeki değişimlere bakılarak gradyan tahmin edilir (Tanım 2).
-3.  **Direction Finding (Yön Bulma):** Elde edilen gradyan demetinin (bundle) konveks zarfında orijine en yakın nokta bulunur. Bu nokta, en dik iniş yönünün tersidir. Bu işlem Gurobi ile çözülür.
-
-## 📊 Sonuçların Analizi
-
-`main.py` çalıştırıldığında sonuçlar `results/` klasörüne kaydedilir:
-- **`{dataset}_results.txt`**: Modelin ağırlıkları, biases değerleri ve başarım metrikleri.
-- **`{dataset}_decision_boundary_2d.png`**: 2D veri setleri için karar sınırları.
-- **`{dataset}_decision_boundary_3d.png`**: 3D veri setleri için 3 boyutlu dağılım.
-
-Örnek Başarımlar:
-- **Moons:** ~98.5% Doğruluk
-- **Breast Cancer:** ~98.9% Doğruluk
-- **Blobs 3D:** ~100% Doğruluk
-
-2 boyutlu veri setleri için oluşturulan görsel şunları gösterir:
-- **Mavi Noktalar:** A Sınıfı (Min Region)
-- **Kırmızı Noktalar:** B Sınıfı (Max Region)
-- **Kontur Alanları:** Modelin karar sınırları.
-
-Model, `make_moons` gibi lineer ayrılamayan bir veri setini, birden fazla doğru parçası kullanarak başarıyla ayırmaktadır. Başlangıçta yüksek olan hata değeri (Loss), iterasyonlar ilerledikçe azalmakta ve 0'a yaklaşmaktadır. Bu, algoritmanın yakınsadığını gösterir.
-
-
 ---
-*Bu proje ENM612 dersi kapsamında hazırlanmıştır.*
+*Bu proje ENM612 dersi kapsamında geliştirilmiştir.*

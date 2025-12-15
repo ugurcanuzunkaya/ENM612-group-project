@@ -1,0 +1,7 @@
+gurobipy>=12
+matplotlib>=3.10.7
+numpy>=2.3.5
+scikit-learn>=1.7.2
+ucimlrepo>=0.0.7
+pytest>=8.0
+ruff>=0.1
