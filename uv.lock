@@ -105,7 +105,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "gurobipy", specifier = "<13" },
+    { name = "gurobipy", specifier = ">=12" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "numpy", specifier = ">=2.3.5" },
     { name = "scikit-learn", specifier = ">=1.7.2" },

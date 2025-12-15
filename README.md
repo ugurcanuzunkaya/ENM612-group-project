@@ -48,18 +48,40 @@ uv run pytest tests/test_max_min.py
 Bu testler; hiperparametrelerin doğruluğunu, kayıp fonksiyonunun negatif olmamasını ve gradyan boyutlarını kontrol eder.
 
 ### Modeli Eğitme ve Görselleştirme
-Modeli `make_moons` veri seti üzerinde eğitmek ve karar sınırlarını çizdirmek için:
+Modeli farklı veri setleri üzerinde çalıştırmak için CLI argümanları eklenmiştir.
+
+**Moons Veri Seti (Varsayılan):**
 ```bash
-uv run main.py
+uv run main.py --dataset moons --groups 3 --planes 2
 ```
-Bu komut, eğitimi başlatacak ve sonuçta `decision_boundary.png` adında bir görsel oluşturacaktır.
+
+**Breast Cancer Veri Seti:**
+```bash
+uv run main.py --dataset breast_cancer
+```
+
+**Blobs 3D Veri Seti (3D Görselleştirme Testi):**
+```bash
+uv run main.py --dataset blobs_3d --groups 3 --planes 2
+```
+
+**Özel (Custom) Veri Seti:**
+1. `src/dataset_loader.py` dosyasındaki `load_custom_dataset` fonksiyonunu düzenleyin.
+2. Aşağıdaki komutu çalıştırın:
+```bash
+uv run main.py --dataset custom
+```
+
+Bu komutlar eğitimi başlatacak, başarı oranlarını (Accuracy, F1-Score) ve toplam süreyi raporlayacaktır. 2 boyutlu veri setleri için `decision_boundary.png` görseli oluşturulur.
 
 ## 📂 Proje Yapısı
 
 ```
 .
 ├── src/
-│   └── max_min.py       # Algoritmanın ana sınıfı (MaxMinSeparability)
+│   ├── max_min.py       # Algoritmanın ana sınıfı (MaxMinSeparability)
+│   ├── dataset_loader.py # Veri seti yükleme ve işleme modülü
+│   └── visualization.py  # Görselleştirme modülü (2D/3D)
 ├── tests/
 │   └── test_max_min.py  # Birim testler
 ├── main.py              # Çalıştırma ve görselleştirme betiği
@@ -77,21 +99,23 @@ Kodun temel bileşenleri şunlardır:
 
 ## 📊 Sonuçların Analizi
 
-`main.py` çalıştırıldığında elde edilen `decision_boundary.png` görseli şunları gösterir:
+`main.py` çalıştırıldığında sonuçlar `results/` klasörüne kaydedilir:
+- **`{dataset}_results.txt`**: Modelin ağırlıkları, biases değerleri ve başarım metrikleri.
+- **`{dataset}_decision_boundary_2d.png`**: 2D veri setleri için karar sınırları.
+- **`{dataset}_decision_boundary_3d.png`**: 3D veri setleri için 3 boyutlu dağılım.
+
+Örnek Başarımlar:
+- **Moons:** ~98.5% Doğruluk
+- **Breast Cancer:** ~98.9% Doğruluk
+- **Blobs 3D:** ~100% Doğruluk
+
+2 boyutlu veri setleri için oluşturulan görsel şunları gösterir:
 - **Mavi Noktalar:** A Sınıfı (Min Region)
 - **Kırmızı Noktalar:** B Sınıfı (Max Region)
 - **Kontur Alanları:** Modelin karar sınırları.
 
 Model, `make_moons` gibi lineer ayrılamayan bir veri setini, birden fazla doğru parçası kullanarak başarıyla ayırmaktadır. Başlangıçta yüksek olan hata değeri (Loss), iterasyonlar ilerledikçe azalmakta ve 0'a yaklaşmaktadır. Bu, algoritmanın yakınsadığını gösterir.
 
-## 🔮 Gelecek Çalışmalar (Future Updates)
-
-Bu proje şu an temel bir implementasyondur. İleride yapılabilecek geliştirmeler:
-
-1.  **Hiperparametre Optimizasyonu:** `n_groups` ve `n_hyperplanes_per_group` parametrelerinin otomatik seçimi için Cross-Validation eklenebilir.
-2.  **Daha Hızlı Çözücüler:** Gurobi yerine açık kaynaklı çözücüler (örneğin OSQP veya SciPy) entegre edilerek lisans bağımlılığı azaltılabilir.
-3.  **Büyük Veri Desteği:** Kod şu an tüm veriyi bellekte tutmaktadır. Büyük veri setleri için "Mini-batch" yaklaşımı eklenebilir.
-4.  **Çoklu Sınıf Desteği:** Şu an sadece ikili sınıflandırma (Binary Classification) yapılmaktadır. One-vs-All yöntemiyle çoklu sınıf desteği getirilebilir.
 
 ---
 *Bu proje ENM612 dersi kapsamında hazırlanmıştır.*
