@@ -119,17 +119,16 @@ Tüm deneyler **`results/`** klasörüne kaydedilir. Bu klasörde:
 
 **Özet Başarım Tablosu:**
 
-| Veri Seti | Kaynak | Özellik Sayısı | Doğruluk (Accuracy) |
-| :--- | :--- | :---: | :---: |
-| **Blobs 3D** | Sklearn | 3 | **%100.00** |
-| **Breast Cancer** | Sklearn | 30 | **%99.30** |
-| **WBCD** | UCI | 30 | **%99.12** |
-| **Votes** | UCI | 16 | **%99.08** |
-| **Moons** | Sklearn | 2 | **%98.00** |
-| **Ionosphere** | UCI | 34 | **%98.01** |
-| **WBCP** | UCI | 33 | **%94.95** |
-| **Heart** | UCI | 13 | **%93.40** |
-| **BUPA Liver** | UCI | 5 | **%27.83** |
+| Veri Seti | Kaynak | Özellik Sayısı | Doğruluk (Accuracy) | Parametreler (r, j) |
+| :--- | :--- | :---: | :---: | :---: |
+| **WBCD** | UCI | 30 | **%99.12** | r=5, j=2 |
+| **Votes** | UCI | 16 | **%98.85** | r=2, j=3 |
+| **Ionosphere** | UCI | 34 | **%98.58** | r=2, j=2 |
+| **Blobs 3D** | Sklearn | 3 | **%100.00** | - |
+| **Moons** | Sklearn | 2 | **%98.00** | - |
+| **Heart** | UCI | 13 | **%93.73** | r=2, j=5 |
+| **WBCP** | UCI | 33 | **%92.93** | r=3, j=2 |
+| **BUPA Liver** | UCI | 5 | **%29.28** | r=10, j=2 |
 
 ## 📂 Proje Yapısı
 
